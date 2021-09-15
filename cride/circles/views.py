@@ -1,13 +1,16 @@
+"""Circle views."""
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from django.http import JsonResponse
 
 from cride.circles.models import Circle
 
+@api_view(['GET'])
 def list_circles(request):
-    circles = Circle.objects.all()
-    public = circles.filter(is_public = True)
+    circles = Circle.objects.filter(is_public = True)
     data = []
-    for circle in public:
+    for circle in circles:
         data.append({
             'name': circle.name,
             'slug_name': circle.slug_name,
@@ -17,4 +20,27 @@ def list_circles(request):
         })
 
     return JsonResponse(data, safe=False)
+
+
+@api_view(['POST'])
+def create_circle(request):
+    """Create circle."""
+    name = request.data['name']
+    slug_name = request.data['slug_name']
+    #Al parecer, al ponerlo de esta forma lo que hago 
+    # es poner el campo como opcional
+    about = request.data.get('about', '')
+    circle = Circle.objects.create(
+        name=name,
+        slug_name=slug_name, 
+        about=about)
+    data = {
+            'name': circle.name,
+            'slug_name': circle.slug_name,
+            'rides_taken': circle.rides_taken,
+            'rides_offered': circle.rides_offered,
+            'members_limit': circle.members_limit,        
+    }
+
+    return Response(data)
 
