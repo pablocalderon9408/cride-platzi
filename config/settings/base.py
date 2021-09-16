@@ -48,6 +48,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 LOCAL_APPS = [
@@ -147,6 +148,17 @@ ADMINS = [
     ("""Pablo Trinidad""", 'pablotrinidad@ciencias.unam.mx'),
 ]
 MANAGERS = ADMINS
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ]
+}
+
+
+
+
 
 # Celery
 INSTALLED_APPS += ['cride.taskapp.celery.CeleryAppConfig']
