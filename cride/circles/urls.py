@@ -17,7 +17,6 @@ from rest_framework import urlpatterns
 from rest_framework.routers import DefaultRouter
 
 # Views
-
 from cride.circles.views import circles as circle_views
 
 router = DefaultRouter()

@@ -16,6 +16,7 @@ from rest_framework.utils import field_mapping
 from rest_framework.validators import UniqueValidator
 
 from cride.users.models import User, Profile
+from cride.users.serializers.profiles import ProfileModelSerializer
 
 
 from datetime import timedelta
@@ -24,15 +25,17 @@ import jwt
 
 class UserModelSerializer(serializers.ModelSerializer):
 
+    profile = ProfileModelSerializer(read_only=True)   
     class Meta:
-
+        
         model = User
         fields = (
             'username',
             'first_name',
             'last_name',
             'email',
-            'phone_number'
+            'phone_number',
+            'profile'
         )
 
 class UserLoginSerializer(serializers.Serializer):
@@ -59,11 +62,10 @@ class UserLoginSerializer(serializers.Serializer):
         token, created = Token.objects.get_or_create(user=self.context['user'])
         return self.context['user'], token.key
 
-
 class UserSignUpSerializer(serializers.Serializer):
     """User signup serializer
     
-    Handle sign up data valdiation and user/profile creation"""
+    Handle sign up data validation and user/profile creation"""
 
     email = serializers.EmailField(
         max_length=140,
@@ -89,9 +91,13 @@ class UserSignUpSerializer(serializers.Serializer):
 
     first_name = serializers.CharField(min_length=2,max_length = 30)
     last_name = serializers.CharField(min_length=2,max_length = 30)
+    
 
     def validate(self,data):
+        """Validates specific fields.        
+        data argument comes from serializer (data=request.data) """
 
+        print("Voy a validar la contraseña")
         passwd = data['password']
         passwd_confirmation = data['password_confirmation']
 
@@ -99,18 +105,20 @@ class UserSignUpSerializer(serializers.Serializer):
             raise serializers.ValidationError('Passwords dont match')
 
         password_validation.validate_password(passwd)
-
         return data
 
     def create(self, data):
+        """Create a new user and its profile"""
+        print("Voy a crear el usuario")
         data.pop('password_confirmation')
-        user = User.objects.create_user(**data, is_verified = False)
+        user = User.objects.create_user(**data, is_verified = False, is_client = True)
         Profile.objects.create(user=user)
         self.send_confirmation_email(user)
         return user
 
     def send_confirmation_email(self,user):
         """Send account verification link to given user"""
+        print("voy a enviar el correo")
         verification_token = self.gen_verification_token(user)
         
         subject = 'Welcome @{}! Verify your account!'.format(user.username)
@@ -125,6 +133,7 @@ class UserSignUpSerializer(serializers.Serializer):
         msg.send()
 
     def gen_verification_token(self,user):
+        """Generate the verification token for the user"""
         exp_date = timezone.now() + timedelta(days=3)
         payload = {
             'user':user.username,
@@ -135,12 +144,14 @@ class UserSignUpSerializer(serializers.Serializer):
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
         return token.decode()
 
+  
+
 class AccountVerificationSerializer(serializers.Serializer):
     """Account verification serializer"""
 
     token = serializers.CharField()
 
-    def validate_token(self, data):
+    def validate_token(self, data):        
 
         try:
             payload = jwt.decode(data, settings.SECRET_KEY, algorithm = ['HS256'])
@@ -153,14 +164,17 @@ class AccountVerificationSerializer(serializers.Serializer):
         if payload['type'] != 'email_confirmation':
             raise serializers.ValidationError('Invalid token')
 
+        """The context is always there. If nothing is sent, it is an empty dictionary.
+        You can always add to it more information"""
         self.context['payload'] = payload
+
         return data
 
     def save(self):
-
         payload = self.context['payload']
         user = User.objects.get(username = payload['user'])
         user.is_verified = True
+        # import ipdb; ipdb.set_trace()
         user.save()
 
 

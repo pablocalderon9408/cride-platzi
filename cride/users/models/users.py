@@ -35,15 +35,14 @@ class User(CRideModel,AbstractUser):
         default= True,
         help_text=(
             'Help easily distinguish users and perform queries.'
-            'Clints are the main type of user.'
-            
+            'Clients are the main type of user.'            
         )
     )
 
     is_verified = models.BooleanField(
         'verified',
         default=False,
-        help_text='Set to true when the user have verified ist email address'
+        help_text='Set to true when the user have verified its email address'
     )
 
 
@@ -52,3 +51,10 @@ class User(CRideModel,AbstractUser):
 
     def get_short_name(self):
         return self.username
+
+    # @property    
+    # def is_authenticated(self):
+    #     print(self.is_verified)
+    #     if self.is_verified:
+    #         return True
+    #     return False

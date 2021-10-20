@@ -17,7 +17,7 @@ class Profile(CRideModel):
 
     user = models.OneToOneField('users.User', on_delete=models.CASCADE)
 
-    picture = models,ImageField(
+    picture = models.ImageField(
         'profile picture',
         upload_to = 'users/pictures/',
         blank = True,
