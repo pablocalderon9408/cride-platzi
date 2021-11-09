@@ -96,8 +96,6 @@ class UserSignUpSerializer(serializers.Serializer):
     def validate(self,data):
         """Validates specific fields.        
         data argument comes from serializer (data=request.data) """
-
-        print("Voy a validar la contraseña")
         passwd = data['password']
         passwd_confirmation = data['password_confirmation']
 
@@ -109,7 +107,6 @@ class UserSignUpSerializer(serializers.Serializer):
 
     def create(self, data):
         """Create a new user and its profile"""
-        print("Voy a crear el usuario")
         data.pop('password_confirmation')
         user = User.objects.create_user(**data, is_verified = False, is_client = True)
         Profile.objects.create(user=user)
@@ -118,7 +115,6 @@ class UserSignUpSerializer(serializers.Serializer):
 
     def send_confirmation_email(self,user):
         """Send account verification link to given user"""
-        print("voy a enviar el correo")
         verification_token = self.gen_verification_token(user)
         
         subject = 'Welcome @{}! Verify your account!'.format(user.username)
@@ -144,7 +140,6 @@ class UserSignUpSerializer(serializers.Serializer):
         token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
         return token.decode()
 
-  
 
 class AccountVerificationSerializer(serializers.Serializer):
     """Account verification serializer"""

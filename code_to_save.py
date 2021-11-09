@@ -2,6 +2,7 @@ import csv
 
 from cride.circles.models import Circle
 
+
 def load_circles(filename):
     with open(filename, 'r') as csvfile:
         reader = csv.reader(csvfile)
@@ -14,8 +15,9 @@ def load_circles(filename):
                 verified=row[3] == '1',
                 is_limited=row[4] != '0',
                 members_limit=0 if row[4] == '0' else int(
-row[4])
+                                row[4])
             )
             print(c)
+
 
 load_circles('circles.csv')

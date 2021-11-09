@@ -10,8 +10,8 @@ from cride.utils.models import CRideModel
 class User(CRideModel,AbstractUser):
     """User model.
     
-    Extend form Django's AbstractUser, change the username field to email and some extra
-    fields"""
+    Extend from Django's AbstractUser, change the username field to
+    email and some extra fields"""
 
     email = models.EmailField(
         'email address',
@@ -23,9 +23,12 @@ class User(CRideModel,AbstractUser):
 
     phone_regex = RegexValidator(
         regex=r'\+?1?\d{9,15}$',
-        message='Phone number must be entered in the format: +999999999. Up to 15 digits allowed.'
+        message ="Phone number must be entered in the format: +999999999. Up to 15 digits allowed."
     )
-    phone_number = models.CharField(validators=[phone_regex],max_length=17, blank=True)
+    phone_number = models.CharField(
+        validators=[phone_regex],
+        max_length=17,
+        blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username','first_name', 'last_name']

@@ -10,7 +10,7 @@ from cride.utils.models import CRideModel
 
 class Profile(CRideModel):
     """Profile model.
-    
+
     A profile holds a user's public data like biography, picture,
     and statistics.
     """
@@ -19,14 +19,14 @@ class Profile(CRideModel):
 
     picture = models.ImageField(
         'profile picture',
-        upload_to = 'users/pictures/',
-        blank = True,
-        null = True
+        upload_to='users/pictures/',
+        blank=True,
+        null=True
     )
 
     biography = models.TextField(max_length=500, blank=True)
 
-    #Stats
+    # Stats
     rides_taken = models.PositiveIntegerField(default=0)
     rides_offered = models.PositiveIntegerField(default=0)
     reputation = models.FloatField(

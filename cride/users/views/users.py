@@ -62,15 +62,10 @@ class UserViewSet(mixins.RetrieveModelMixin,
         """Users signup"""
         serializer = UserSignUpSerializer(data=request.data)
         """is_valid method calls the validate function in the serializer"""   
-        print("Me fui por acá")
-        import ipdb; ipdb.set_trace()
         serializer.is_valid(raise_exception = True)
-        print("Terminé acá")     
         """When the save method is called, it calls the create method"""
         user = serializer.save()
-        print("QUé método llamo")       
         data = UserModelSerializer(user).data
-        print("Ya acabé")        
         return Response(data, status=status.HTTP_201_CREATED)
 
 
